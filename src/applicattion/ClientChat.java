@@ -4,28 +4,35 @@ import java.net.*;
 
 import java.awt.EventQueue;
 
+import javax.swing.event.*;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import java.awt.Font;
 import java.awt.Color;
+
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.awt.event.ActionEvent;
 import javax.swing.border.LineBorder;
 
-public class Client {
+public class ClientChat {
 
 	private JFrame frame;
 	private JTextField title;
 	private JTextField numberOne;
 	private JTextField numberTwo;
+	private JRadioButton radioBtn1, radioBtn2, radioBtn3;
+	private ButtonGroup bg;
 	private JButton btnSendButton;
 	private JTextArea chatPanel;
 
@@ -36,7 +43,7 @@ public class Client {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Client window = new Client();
+					ClientChat window = new ClientChat();
 					window.frame.setVisible(true);
 
 				} catch (Exception e) {
@@ -49,7 +56,7 @@ public class Client {
 	/**
 	 * Create the application.
 	 */
-	public Client() {
+	public ClientChat()  {
 		initialize();
 	}
 
@@ -71,7 +78,7 @@ public class Client {
 		frame.getContentPane().add(title);
 		title.setColumns(10);
 		
-		//Chat message 
+		//Insert number1 
 		numberOne = new JTextField();
 		numberOne.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		numberOne.setBackground(new Color(192, 192, 192));
@@ -80,22 +87,45 @@ public class Client {
 		numberOne.setColumns(10);
 		
 		
-		
-		//Chat message 
+		//Insert number2
 		numberTwo = new JTextField();
 		numberTwo.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		numberTwo.setBackground(new Color(192, 192, 192));
 		numberTwo.setBounds(170,50, 82, 20);
 		frame.getContentPane().add(numberTwo);
 		numberTwo.setColumns(10);
+		
+		//Choose operator.
+		bg = new ButtonGroup();
+		radioBtn1 = new JRadioButton("SUMA");
+		radioBtn1.setBounds(10, 100, 60, 50);
+		radioBtn1.setSelected(true);
+		frame.getContentPane().add(radioBtn1);
+		bg.add(radioBtn1);
+		
+		radioBtn2 = new JRadioButton("RESTA");
+		radioBtn2.setBounds(70, 100, 70, 50);
+		frame.getContentPane().add(radioBtn2);
+		bg.add(radioBtn2);
+		
+		radioBtn3 = new JRadioButton("MULTIPLICACION");
+		radioBtn3.setBounds(140, 100, 140, 50);
+		frame.getContentPane().add(radioBtn3);
+		bg.add(radioBtn3);
+		
+		//Associated actionListener with radiobutton.
+		radioBtn1.addActionListener(resetTextFieldListener);
+		radioBtn2.addActionListener(resetTextFieldListener);
+		radioBtn3.addActionListener(resetTextFieldListener);
 
 		
-		
+		//SEND button , send Client with attributes.
 		
 		btnSendButton = new JButton("SEND");
 		btnSendButton.setBackground(new Color(192, 192, 192));
 		btnSendButton.setEnabled(false);
 		btnSendButton.setBorder(new LineBorder(new Color(0, 0, 0), 2, true));
+		
 		
 		// Enable button dynamically based on input validation
         KeyAdapter validationAdapter = new KeyAdapter() {
@@ -103,7 +133,7 @@ public class Client {
             public void keyReleased(KeyEvent e) {
                 boolean enabled = checkNumber(numberOne) && checkNumber(numberTwo);
                 chatPanel.setText("");
-                enableButton(enabled);
+                btnSendButton.setEnabled(enabled);
             }
         };
         numberOne.addKeyListener(validationAdapter);
@@ -115,13 +145,19 @@ public class Client {
 				
 					int number1 = conversor(numberOne);
 					int number2 = conversor(numberTwo);
+					Operator operator = getSelectedOperator();
 					
-					sendData(number1, number2);	
+					Operation operation = new Operation(number1, number2, operator);
+					
+					sendData(operation);	
 					
 			}
 		});
-		btnSendButton.setBounds(95, 100, 89, 23);
+		
+		btnSendButton.setBounds(95, 300, 89, 23);
 		frame.getContentPane().add(btnSendButton);
+		btnSendButton.addActionListener(resetTextFieldListener);
+		
 		
 		//Allows scroll chat.
 		JScrollPane scrollPane = new JScrollPane();
@@ -134,23 +170,24 @@ public class Client {
 		chatPanel = new JTextArea();
 		chatPanel.setFont(new Font("Monospaced", Font.PLAIN, 38));
 		chatPanel.setBackground(new Color(192, 192, 192));
+		chatPanel.setEditable(false);
 		scrollPane.setViewportView(chatPanel);
 		
 		
 	}
 	
 	
-	
+
 	public boolean checkNumber (JTextField string) {
 		
 		try {
-			int number = Integer.parseInt(string.getText());
+			Integer.parseInt(string.getText());
+	        return true;
 			
 		}catch(NumberFormatException nb) {
+			JOptionPane.showMessageDialog(frame, "Por favor, ingrese un número válido.", "Error", JOptionPane.ERROR_MESSAGE);
 			return false;
-		}
-		
-		return true;		
+		}	
 	}
 	
 	
@@ -161,24 +198,18 @@ public class Client {
 	
 	
 	
-	public void enableButton (boolean enable) {
-		btnSendButton.setEnabled(enable);
-	}
-	
-	
-	
-	public int sendData(int numberOne, int numberTwo) {
+	public int sendData(Operation operation) {
 		
 		int result = 0;
 		
 		 try (Socket mySocket = new Socket("localhost", 3000);
-		         DataOutputStream dataOut = new DataOutputStream(mySocket.getOutputStream());
+		         ObjectOutputStream objectOut = new ObjectOutputStream(mySocket.getOutputStream());
 		         DataInputStream dataIn = new DataInputStream(mySocket.getInputStream())) {
 			
-			System.out.println("Imprimimos" + numberOne + " y " + numberTwo);
-			dataOut.writeInt(numberOne);
+			System.out.println("Números seleccionados" + operation.getNumber1() + " y " + operation.getNumber2());
+			System.out.println("Operación elegida: " + operation.getOp());
 			
-			dataOut.writeInt(numberTwo);
+			objectOut.writeObject(operation);
 			
 			
 			
@@ -200,4 +231,22 @@ public class Client {
 		return result;
 		
 	}
+	
+	
+	//Select the operator depends on radioBtn selection.
+	public Operator getSelectedOperator() {
+		if(radioBtn1.isSelected())return Operator.SUMA;
+		if(radioBtn2.isSelected())return Operator.RESTA;
+		if(radioBtn3.isSelected())return Operator.MULTIPLICACION;
+		return null;
+	}
+	
+	//Reset result field if radiobutton is changed.
+	ActionListener resetTextFieldListener = new ActionListener() {
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+	    	chatPanel.setText("");
+	    }
+	};
+
 }
