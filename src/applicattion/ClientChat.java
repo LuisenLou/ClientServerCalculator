@@ -4,7 +4,6 @@ import java.net.*;
 
 import java.awt.EventQueue;
 
-import javax.swing.event.*;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
@@ -87,6 +86,7 @@ public class ClientChat {
 		numberOne.setColumns(10);
 		
 		
+		
 		//Insert number2
 		numberTwo = new JTextField();
 		numberTwo.setBorder(new LineBorder(new Color(0, 0, 0), 2));
@@ -128,29 +128,11 @@ public class ClientChat {
 		
 		
 		// Enable button dynamically based on input validation
-        KeyAdapter validationAdapter = new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent e) {
-                boolean enabled = checkNumber(numberOne) && checkNumber(numberTwo);
-                chatPanel.setText("");
-                btnSendButton.setEnabled(enabled);
-            }
-        };
-        numberOne.addKeyListener(validationAdapter);
-        numberTwo.addKeyListener(validationAdapter);
-		
+		addValidationListeners();
 		
 		btnSendButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-					int number1 = conversor(numberOne);
-					int number2 = conversor(numberTwo);
-					Operator operator = getSelectedOperator();
-					
-					Operation operation = new Operation(number1, number2, operator);
-					
-					sendData(operation);	
-					
+				handleSendButtonAction();
 			}
 		});
 		
@@ -177,17 +159,54 @@ public class ClientChat {
 	}
 	
 	
+	private void validateAndToggleSendButton() {
+	    boolean enabled = checkNumber(numberOne) && checkNumber(numberTwo);
+	    btnSendButton.setEnabled(enabled);
+	}
+	
+	private void addValidationListeners() {
+	    KeyAdapter validationAdapter = new KeyAdapter() {
+	        @Override
+	        public void keyReleased(KeyEvent e) {
+	            validateAndToggleSendButton();
+	        }
+	    };
+
+	    numberOne.addKeyListener(validationAdapter);
+	    numberTwo.addKeyListener(validationAdapter);
+	}
+	
 
 	public boolean checkNumber (JTextField string) {
 		
 		try {
-			Integer.parseInt(string.getText());
-	        return true;
+			if(!string.getText().equals("")) {
+				Integer.parseInt(string.getText());
+				return true;
+			}else if(string.getText().equals("")) {
+				return false;
+			}else throw new NumberFormatException();
 			
 		}catch(NumberFormatException nb) {
 			JOptionPane.showMessageDialog(frame, "Por favor, ingrese un número válido.", "Error", JOptionPane.ERROR_MESSAGE);
 			return false;
-		}	
+		}
+	}
+	
+	public void handleSendButtonAction() {
+	    try {
+	        int number1 = conversor(numberOne);
+	        int number2 = conversor(numberTwo);
+	        Operator operator = getSelectedOperator();
+
+	        Operation operation = new Operation(number1, number2, operator);
+
+	        sendData(operation);
+	    } catch (IllegalArgumentException ex) {
+	    	JOptionPane.showMessageDialog(frame, "Por favor, ingrese un número válido.", "Error", JOptionPane.ERROR_MESSAGE);
+	    } catch (Exception ex) {
+	    	JOptionPane.showMessageDialog(frame, "Error inesperado.", "Error", JOptionPane.ERROR_MESSAGE);
+	    }
 	}
 	
 	
