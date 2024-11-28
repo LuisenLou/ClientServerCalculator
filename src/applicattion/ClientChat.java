@@ -5,6 +5,7 @@ import java.net.*;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -78,16 +79,25 @@ public class ClientChat {
 		title.setColumns(10);
 		
 		//Insert number1 
+		JLabel labelNumber1 = new JLabel("Inserte número:");
+		labelNumber1.setFont(new Font("Arial", Font.BOLD, 11));
+		labelNumber1.setBounds(30,30, 95, 20);
+		frame.getContentPane().add(labelNumber1);
+		
 		numberOne = new JTextField();
 		numberOne.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		numberOne.setBackground(new Color(192, 192, 192));
 		numberOne.setBounds(30,50, 82, 20);
 		frame.getContentPane().add(numberOne);
-		numberOne.setColumns(10);
-		
+		numberOne.setColumns(10);	
 		
 		
 		//Insert number2
+		JLabel labelNumber2 = new JLabel("Inserte número:");
+		labelNumber2.setFont(new Font("Arial", Font.BOLD, 11));
+		labelNumber2.setBounds(170,30, 95, 20);
+		frame.getContentPane().add(labelNumber2);
+		
 		numberTwo = new JTextField();
 		numberTwo.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		numberTwo.setBackground(new Color(192, 192, 192));
@@ -96,6 +106,11 @@ public class ClientChat {
 		numberTwo.setColumns(10);
 		
 		//Choose operator.
+		JLabel operator = new JLabel("SELECCIONE LA OPERACIÓN:");
+		operator.setFont(new Font("Arial", Font.BOLD, 11));
+		operator.setBounds(50, 90, 200, 20);
+		frame.getContentPane().add(operator);
+		
 		bg = new ButtonGroup();
 		radioBtn1 = new JRadioButton("SUMA");
 		radioBtn1.setBounds(10, 100, 60, 50);
@@ -118,14 +133,12 @@ public class ClientChat {
 		radioBtn2.addActionListener(resetTextFieldListener);
 		radioBtn3.addActionListener(resetTextFieldListener);
 
-		
 		//SEND button , send Client with attributes.
 		
 		btnSendButton = new JButton("SEND");
 		btnSendButton.setBackground(new Color(192, 192, 192));
 		btnSendButton.setEnabled(false);
 		btnSendButton.setBorder(new LineBorder(new Color(0, 0, 0), 2, true));
-		
 		
 		// Enable button dynamically based on input validation
 		addValidationListeners();
@@ -140,30 +153,37 @@ public class ClientChat {
 		frame.getContentPane().add(btnSendButton);
 		btnSendButton.addActionListener(resetTextFieldListener);
 		
-		
 		//Allows scroll chat.
+		
+		JLabel result = new JLabel("RESULTADO:");
+		result.setFont(new Font("Arial", Font.BOLD, 18));
+		result.setBounds(80, 110, 150, 100);
+		frame.getContentPane().add(result);
+		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBorder(new LineBorder(new Color(0, 0, 0), 2));
-		scrollPane.setBounds(90, 150, 100, 100);
+		scrollPane.setBounds(90, 180, 100, 100);
 		frame.getContentPane().add(scrollPane);
-		
 		
 		//Chat panel.
 		chatPanel = new JTextArea();
 		chatPanel.setFont(new Font("Monospaced", Font.PLAIN, 38));
 		chatPanel.setBackground(new Color(192, 192, 192));
 		chatPanel.setEditable(false);
-		scrollPane.setViewportView(chatPanel);
-		
-		
+		scrollPane.setViewportView(chatPanel);	
 	}
 	
 	
+	
+	// Validates the input fields and enables or disables the send button accordingly
 	private void validateAndToggleSendButton() {
 	    boolean enabled = checkNumber(numberOne) && checkNumber(numberTwo);
 	    btnSendButton.setEnabled(enabled);
 	}
 	
+	
+	
+	// Adds validation listeners to the input fields
 	private void addValidationListeners() {
 	    KeyAdapter validationAdapter = new KeyAdapter() {
 	        @Override
@@ -176,7 +196,9 @@ public class ClientChat {
 	    numberTwo.addKeyListener(validationAdapter);
 	}
 	
-
+	
+	
+	// Checks if the text entered in a JTextField is a valid number
 	public boolean checkNumber (JTextField string) {
 		
 		try {
@@ -193,10 +215,13 @@ public class ClientChat {
 		}
 	}
 	
+	
+	
+	// Handles the send button action
 	public void handleSendButtonAction() {
 	    try {
-	        int number1 = conversor(numberOne);
-	        int number2 = conversor(numberTwo);
+	        int number1 = Integer.parseInt((String)numberOne.getText());
+	        int number2 = Integer.parseInt((String)numberTwo.getText());
 	        Operator operator = getSelectedOperator();
 
 	        Operation operation = new Operation(number1, number2, operator);
@@ -208,15 +233,11 @@ public class ClientChat {
 	    	JOptionPane.showMessageDialog(frame, "Error inesperado.", "Error", JOptionPane.ERROR_MESSAGE);
 	    }
 	}
+
 	
 	
 	
-	public int conversor (JTextField string){
-		return Integer.parseInt((String)string.getText());
-	}
-	
-	
-	
+	// Sends the operation data to the server and returns the result
 	public int sendData(Operation operation) {
 		
 		int result = 0;
@@ -229,9 +250,7 @@ public class ClientChat {
 			System.out.println("Operación elegida: " + operation.getOp());
 			
 			objectOut.writeObject(operation);
-			
-			
-			
+		
 			result = dataIn.readInt();
 			
 			chatPanel.append(String.valueOf(result));
@@ -243,13 +262,11 @@ public class ClientChat {
 			// TODO Auto-generated catch block
 			System.out.println("Error:" + e.getMessage());
 			e.printStackTrace();
-		} finally {
 		}
-		System.out.println(numberOne +
-				 " ' " + numberTwo);
-		return result;
-		
+		return result;	
 	}
+	
+	
 	
 	
 	//Select the operator depends on radioBtn selection.
@@ -260,6 +277,9 @@ public class ClientChat {
 		return null;
 	}
 	
+	
+	
+	
 	//Reset result field if radiobutton is changed.
 	ActionListener resetTextFieldListener = new ActionListener() {
 	    @Override
@@ -267,5 +287,4 @@ public class ClientChat {
 	    	chatPanel.setText("");
 	    }
 	};
-
 }
