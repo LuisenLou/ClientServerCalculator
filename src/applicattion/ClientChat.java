@@ -108,23 +108,23 @@ public class ClientChat {
 		//Choose operator.
 		JLabel operator = new JLabel("SELECCIONE LA OPERACIÓN:");
 		operator.setFont(new Font("Arial", Font.BOLD, 11));
-		operator.setBounds(50, 90, 200, 20);
+		operator.setBounds(50, 80, 200, 20);
 		frame.getContentPane().add(operator);
 		
 		bg = new ButtonGroup();
 		radioBtn1 = new JRadioButton("SUMA");
-		radioBtn1.setBounds(10, 100, 60, 50);
+		radioBtn1.setBounds(10, 100, 60, 40);
 		radioBtn1.setSelected(true);
 		frame.getContentPane().add(radioBtn1);
 		bg.add(radioBtn1);
 		
 		radioBtn2 = new JRadioButton("RESTA");
-		radioBtn2.setBounds(70, 100, 70, 50);
+		radioBtn2.setBounds(70, 100, 70, 40);
 		frame.getContentPane().add(radioBtn2);
 		bg.add(radioBtn2);
 		
 		radioBtn3 = new JRadioButton("MULTIPLICACION");
-		radioBtn3.setBounds(140, 100, 140, 50);
+		radioBtn3.setBounds(140, 100, 140, 40);
 		frame.getContentPane().add(radioBtn3);
 		bg.add(radioBtn3);
 		
