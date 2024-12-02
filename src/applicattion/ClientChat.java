@@ -149,7 +149,7 @@ public class ClientChat {
 			}
 		});
 		
-		btnSendButton.setBounds(95, 300, 89, 23);
+		btnSendButton.setBounds(90, 300, 89, 23);
 		frame.getContentPane().add(btnSendButton);
 		btnSendButton.addActionListener(resetTextFieldListener);
 		
@@ -160,17 +160,16 @@ public class ClientChat {
 		result.setBounds(80, 110, 150, 100);
 		frame.getContentPane().add(result);
 		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBorder(new LineBorder(new Color(0, 0, 0), 2));
-		scrollPane.setBounds(90, 180, 100, 100);
-		frame.getContentPane().add(scrollPane);
 		
 		//Chat panel.
 		chatPanel = new JTextArea();
-		chatPanel.setFont(new Font("Monospaced", Font.PLAIN, 38));
+		chatPanel.setFont(new Font("Monospaced", Font.BOLD, 30));
+		chatPanel.setBounds(85, 190, 100, 50);
+		chatPanel.setBorder(new LineBorder(new Color(0, 0, 0), 2, true));
 		chatPanel.setBackground(new Color(192, 192, 192));
 		chatPanel.setEditable(false);
-		scrollPane.setViewportView(chatPanel);	
+		frame.getContentPane().add(chatPanel);
+		
 	}
 	
 	

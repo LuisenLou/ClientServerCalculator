@@ -54,12 +54,14 @@ public class Server implements Runnable{
 		
 		//Chat panel.
 		chatPanel = new JTextArea();
-		chatPanel.setFont(new Font("Monospaced", Font.PLAIN, 12));
+		chatPanel.setFont(new Font("Monospaced", Font.BOLD, 13));
 		chatPanel.setBackground(new Color(192, 192, 192));
 		scrollPane.setViewportView(chatPanel);
 		
+		
+		
+		
 		//RESET button .
-
 		resetButton = new JButton("RESET");
 		resetButton.setBackground(new Color(192, 192, 192));
 		resetButton.setBorder(new LineBorder(new Color(0, 0, 0), 2, true));
@@ -107,7 +109,8 @@ public class Server implements Runnable{
 				
 				int result = calculator(operation);
 				
-				chatPanel.append("Número 1: " + operation.getNumber1() + ". Número 2: "+ operation.getNumber2() + ". Resultado: " + result + "\n");
+				
+				chatPanel.append(setPanelMessage(operation.getNumber1(), operation.getNumber2(), result));
 				
 				dataOut.writeInt(result);
 				
@@ -121,8 +124,7 @@ public class Server implements Runnable{
 			e.printStackTrace();
 		} catch (ClassNotFoundException cls) {
 			cls.printStackTrace();
-		}
-		
+		} 
 	}
 	
 	
@@ -138,12 +140,7 @@ public class Server implements Runnable{
 				result = number1 + number2;
 				break;
 			case Operator.RESTA:
-				if(number1<number2) {
-					chatPanel.append("Número 1 es más alto que Número 2 por lo que se invierten...");
-					result = number2 - number1;
-				}else {
 					result = number1 - number2;
-				}
 				break;
 			case Operator.MULTIPLICACION:
 				result = number1 * number2;
@@ -153,6 +150,14 @@ public class Server implements Runnable{
 		}
 		
 		return result;
+	}
+	
+	public String setPanelMessage(int number1, int number2, int result) {
+		String message = " Número 1: " + number1 + "\n "
+				+ "Número 2: "+ number2 + "\n "
+				+ "Resultado: " + result + "\n"
+				+ "-------------------------------------------"+ "\n";
+		return message;
 	}
 
 }
