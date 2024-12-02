@@ -8,7 +8,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import java.awt.Font;
@@ -34,7 +33,7 @@ public class ClientChat {
 	private JRadioButton radioBtn1, radioBtn2, radioBtn3;
 	private ButtonGroup bg;
 	private JButton btnSendButton;
-	private JTextArea chatPanel;
+	private JTextArea resultField;
 
 	/**
 	 * Launch the application.
@@ -153,22 +152,22 @@ public class ClientChat {
 		frame.getContentPane().add(btnSendButton);
 		btnSendButton.addActionListener(resetTextFieldListener);
 		
-		//Allows scroll chat.
 		
+		//Result Label.
 		JLabel result = new JLabel("RESULTADO:");
 		result.setFont(new Font("Arial", Font.BOLD, 18));
 		result.setBounds(80, 110, 150, 100);
 		frame.getContentPane().add(result);
 		
 		
-		//Chat panel.
-		chatPanel = new JTextArea();
-		chatPanel.setFont(new Font("Monospaced", Font.BOLD, 30));
-		chatPanel.setBounds(85, 190, 100, 50);
-		chatPanel.setBorder(new LineBorder(new Color(0, 0, 0), 2, true));
-		chatPanel.setBackground(new Color(192, 192, 192));
-		chatPanel.setEditable(false);
-		frame.getContentPane().add(chatPanel);
+		//Result panel.
+		resultField = new JTextArea();
+		resultField.setFont(new Font("Monospaced", Font.BOLD, 30));
+		resultField.setBounds(85, 190, 100, 50);
+		resultField.setBorder(new LineBorder(new Color(0, 0, 0), 2, true));
+		resultField.setBackground(new Color(192, 192, 192));
+		resultField.setEditable(false);
+		frame.getContentPane().add(resultField);
 		
 	}
 	
@@ -252,7 +251,7 @@ public class ClientChat {
 		
 			result = dataIn.readInt();
 			
-			chatPanel.append(String.valueOf(result));
+			resultField.append(String.valueOf(result));
 						
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
@@ -283,7 +282,7 @@ public class ClientChat {
 	ActionListener resetTextFieldListener = new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
-	    	chatPanel.setText("");
+	    	resultField.setText("");
 	    }
 	};
 }
