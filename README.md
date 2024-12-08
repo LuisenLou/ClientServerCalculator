@@ -19,7 +19,6 @@ It enables developers to acquire skills necessary for complex projects and lays 
 7. Observe the data in the client panel in the corresponding space or section.
 8. Repeat as needed.
 9. If you need to clear the history, click the "RESET" button on the server.
-10. If subtracting a smaller number from a larger number, the server will swap the numbers, subtracting the smaller one from the larger, and will notify in the server panel.
 
 
 # Client-Server Mathematical Operations Application
